@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { LOAN_APPLICATION } from '../data/loanData';
+import { LOAN_APPLICATION } from '../data/decision';
 import {
   getOrInitParticipantSession,
   recordDecisionStartTime,
@@ -89,7 +89,7 @@ export const DecisionPage: React.FC = () => {
           <h1 className="font-headline-lg" style={{ color: 'var(--on-surface)' }}>Decision</h1>
         </div>
 
-        {/* Developer A/B Testing Segmented Control (From Stitch Spec) */}
+        {/* Developer A/B Testing Segmented Control */}
         <div
           style={{
             display: 'inline-flex',
@@ -224,101 +224,20 @@ export const DecisionPage: React.FC = () => {
         </div>
       )}
 
-      {/* Explainable Diagnostic Card (Rendered for Condition B) */}
+      {/* Explainable Diagnostic Card (Condition B only) */}
       {condition === 'B' && (
         <div className="explanation-card" style={{ border: '1px solid rgba(189, 201, 198, 0.2)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-lg)', flexWrap: 'wrap', gap: 'var(--space-sm)' }}>
+          <div style={{ marginBottom: 'var(--space-sm)' }}>
             <h2 className="font-headline-md" style={{ color: 'var(--on-surface)', letterSpacing: '-0.01em' }}>
               Why this decision?
             </h2>
-            <span
-              className="font-mono-data-sm"
-              style={{
-                color: 'var(--outline)',
-                backgroundColor: 'var(--surface-container-highest)',
-                padding: '2px var(--space-sm)',
-                borderRadius: 'var(--radius-md)',
-              }}
-            >
-              FACTOR_WEIGHT_MODEL: {decision.factorModel}
-            </span>
           </div>
 
           <p className="font-body-md" style={{ color: 'var(--on-surface-variant)', marginBottom: 'var(--space-lg)' }}>
-            Relative variable attribution contributing to the adverse classification based on policy constraints and applicant parameters.
+            {decision.description}
           </p>
 
-          {/* Stacked Overview Visual Meter */}
-          <div style={{ marginBottom: 'var(--space-lg)' }}>
-            <div className="font-mono-data-sm" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-xs)', color: 'var(--outline)' }}>
-              <span>Aggregate Feature Attribution</span>
-              <span>100% Total Impact</span>
-            </div>
-            <div
-              style={{
-                width: '100%',
-                height: '12px',
-                backgroundColor: 'var(--surface-container-highest)',
-                borderRadius: 'var(--radius-full)',
-                overflow: 'hidden',
-                display: 'flex',
-              }}
-            >
-              <div
-                style={{
-                  backgroundColor: 'var(--primary)',
-                  height: '100%',
-                  width: barsAnimated ? '50%' : '0%',
-                  transition: 'width 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-                }}
-                title="Repayment capacity: 50%"
-              />
-              <div
-                style={{
-                  backgroundColor: 'var(--primary-container)',
-                  height: '100%',
-                  width: barsAnimated ? '30%' : '0%',
-                  transition: 'width 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s',
-                }}
-                title="Collateral: 30%"
-              />
-              <div
-                style={{
-                  backgroundColor: 'var(--primary-fixed-dim)',
-                  height: '100%',
-                  width: barsAnimated ? '20%' : '0%',
-                  transition: 'width 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s',
-                }}
-                title="Loan amount: 20%"
-              />
-            </div>
-            <div
-              className="font-mono-data-sm"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: 'var(--space-lg)',
-                marginTop: 'var(--space-xs)',
-                color: 'var(--on-surface-variant)',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--primary)', display: 'inline-block' }}></span>
-                <span>Capacity (50%)</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--primary-container)', display: 'inline-block' }}></span>
-                <span>Collateral (30%)</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--primary-fixed-dim)', display: 'inline-block' }}></span>
-                <span>Loan Sum (20%)</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Feature Contribution Breakdown (Granular Bars) */}
+          {/* Feature Contribution Breakdown (4 Individual Granular Bars) */}
           <div
             style={{
               display: 'flex',
@@ -332,74 +251,29 @@ export const DecisionPage: React.FC = () => {
               border: '1px solid rgba(189, 201, 198, 0.3)',
             }}
           >
-            {/* Factor 1 */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span className="font-label-text" style={{ color: 'var(--on-surface)', fontWeight: 500 }}>
-                  Repayment capacity
-                </span>
-                <span className="font-mono-data-md" style={{ fontWeight: 600, color: 'var(--on-surface)' }}>
-                  50%
-                </span>
+            {decision.attributions.map((attr, idx) => (
+              <div key={attr.id}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <span className="font-label-text" style={{ color: 'var(--on-surface)', fontWeight: 500 }}>
+                    {attr.label}
+                  </span>
+                  <span className="font-mono-data-md" style={{ fontWeight: 600, color: 'var(--on-surface)' }}>
+                    {attr.percentage}%
+                  </span>
+                </div>
+                <div style={{ width: '100%', backgroundColor: 'var(--surface-container-highest)', height: '8px', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
+                  <div
+                    style={{
+                      backgroundColor: attr.colorHex,
+                      height: '8px',
+                      borderRadius: 'var(--radius-full)',
+                      width: barsAnimated ? `${attr.percentage}%` : '0%',
+                      transition: `width 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.1}s`,
+                    }}
+                  />
+                </div>
               </div>
-              <div style={{ width: '100%', backgroundColor: 'var(--surface-container-highest)', height: '8px', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
-                <div
-                  style={{
-                    backgroundColor: 'var(--primary)',
-                    height: '8px',
-                    borderRadius: 'var(--radius-full)',
-                    width: barsAnimated ? '50%' : '0%',
-                    transition: 'width 0.9s cubic-bezier(0.16, 1, 0.3, 1)',
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Factor 2 */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span className="font-label-text" style={{ color: 'var(--on-surface)', fontWeight: 500 }}>
-                  Collateral
-                </span>
-                <span className="font-mono-data-md" style={{ fontWeight: 600, color: 'var(--on-surface)' }}>
-                  30%
-                </span>
-              </div>
-              <div style={{ width: '100%', backgroundColor: 'var(--surface-container-highest)', height: '8px', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
-                <div
-                  style={{
-                    backgroundColor: 'var(--primary-container)',
-                    height: '8px',
-                    borderRadius: 'var(--radius-full)',
-                    width: barsAnimated ? '30%' : '0%',
-                    transition: 'width 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s',
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Factor 3 */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span className="font-label-text" style={{ color: 'var(--on-surface)', fontWeight: 500 }}>
-                  Loan amount
-                </span>
-                <span className="font-mono-data-md" style={{ fontWeight: 600, color: 'var(--on-surface)' }}>
-                  20%
-                </span>
-              </div>
-              <div style={{ width: '100%', backgroundColor: 'var(--surface-container-highest)', height: '8px', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
-                <div
-                  style={{
-                    backgroundColor: 'var(--primary-fixed-dim)',
-                    height: '8px',
-                    borderRadius: 'var(--radius-full)',
-                    width: barsAnimated ? '20%' : '0%',
-                    transition: 'width 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s',
-                  }}
-                />
-              </div>
-            </div>
+            ))}
           </div>
 
           {/* Confidence Line Metric */}
@@ -426,7 +300,7 @@ export const DecisionPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Adverse Factors Callout */}
+          {/* Key reasons Callout */}
           <div
             style={{
               backgroundColor: 'var(--surface-container-lowest)',
@@ -437,13 +311,13 @@ export const DecisionPage: React.FC = () => {
             }}
           >
             <div className="font-label-text" style={{ color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 'var(--space-sm)' }}>
-              Primary Determinants
+              {decision.keyReasonsHeading}
             </div>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)', listStyle: 'none', color: 'var(--on-surface)' }}>
-              {decision.determinants.map((determinant, idx) => (
+              {decision.keyReasons.map((reason, idx) => (
                 <li key={idx} className="font-body-md" style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-sm)' }}>
                   <span style={{ color: 'var(--error)', fontWeight: 700, lineHeight: 1, marginTop: '4px' }}>•</span>
-                  <span>{determinant}</span>
+                  <span>{reason}</span>
                 </li>
               ))}
             </ul>

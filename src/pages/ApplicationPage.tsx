@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { LOAN_APPLICATION } from '../data/loanData';
+import { LOAN_APPLICATION } from '../data/decision';
 import { hasSubmitted, getOrInitParticipantSession } from '../lib/storage';
 
 export const ApplicationPage: React.FC = () => {
@@ -131,8 +131,8 @@ export const ApplicationPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Row 6: Co-applicant Income */}
-          <div className="data-row" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-md) 0' }}>
+          {/* Row 6: Co-applicant Annual Income */}
+          <div className="data-row" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-md) 0', borderBottom: '1px solid rgba(189, 201, 198, 0.3)' }}>
             <div style={{ width: '50%', minWidth: '180px' }}>
               <span className="font-body-sm" style={{ color: 'var(--on-surface-variant)', fontWeight: 500 }}>
                 Co-applicant ({applicant.coApplicantRelation}) annual income
@@ -140,7 +140,35 @@ export const ApplicationPage: React.FC = () => {
             </div>
             <div style={{ width: '50%', minWidth: '180px', textAlign: 'right' }}>
               <span className="font-mono-data-md" style={{ color: 'var(--on-surface)', fontWeight: 600, letterSpacing: '-0.02em' }}>
-                {applicant.coApplicantIncome}
+                {applicant.coApplicantAnnualIncome}
+              </span>
+            </div>
+          </div>
+
+          {/* Row 7: Co-applicant Monthly Income (New Row) */}
+          <div className="data-row" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-md) 0', borderBottom: '1px solid rgba(189, 201, 198, 0.3)' }}>
+            <div style={{ width: '50%', minWidth: '180px' }}>
+              <span className="font-body-sm" style={{ color: 'var(--on-surface-variant)', fontWeight: 500 }}>
+                Co-applicant monthly income
+              </span>
+            </div>
+            <div style={{ width: '50%', minWidth: '180px', textAlign: 'right' }}>
+              <span className="font-mono-data-md" style={{ color: 'var(--on-surface)', fontWeight: 600, letterSpacing: '-0.02em' }}>
+                {applicant.coApplicantMonthlyIncome}
+              </span>
+            </div>
+          </div>
+
+          {/* Row 8: Applicant Credit History (New Row) */}
+          <div className="data-row" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-md) 0' }}>
+            <div style={{ width: '50%', minWidth: '180px' }}>
+              <span className="font-body-sm" style={{ color: 'var(--on-surface-variant)', fontWeight: 500 }}>
+                Applicant credit history
+              </span>
+            </div>
+            <div style={{ width: '50%', minWidth: '180px', textAlign: 'right' }}>
+              <span className="font-body-md" style={{ color: 'var(--on-surface)', fontWeight: 500 }}>
+                {applicant.creditHistory}
               </span>
             </div>
           </div>
